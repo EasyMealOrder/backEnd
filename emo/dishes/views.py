@@ -59,6 +59,8 @@ def getManyOrderInfo(request, numOfOnePage, page):
     serial = SimpOrderSerializer(res,many=True)
     return Response(serial.data)
 
+
+
 @api_view(['GET'])
 def getOneFeedbackInfo(request,orderid):
     try:
