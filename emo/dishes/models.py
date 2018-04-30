@@ -26,9 +26,10 @@ class Dishes(models.Model):
  
  #以下的Model都是为了记录信息创建的，不要注册到admin管理界面   
 #订单详情
+
+    
 class Order(models.Model):
     id = models.BigAutoField(primary_key=True)
-    dishes=models.TextField('菜名表')
     discount = models.FloatField('折扣')
     price=models.FloatField('应付')    
     finished=models.BooleanField('是否完成')
@@ -38,7 +39,17 @@ class Order(models.Model):
     def __str__(self):
         return '订单编号：'+self.id
 
-
+class DishRecord(models.Model):
+    orderID = models.BigIntegerField('订单编号')
+    dishID = models.IntegerField('菜色编号')
+    number = models.IntegerField('数量')
+    name = models.CharField('菜名',max_length = 256)
+    price = models.FloatField('价格')
+    
+    def __str__(self):
+        return self.orderID + " - >" + self.dishID
+    
+    
 class Statistic(models.Model):
     dish = models.CharField('菜名',max_length = 256)
     sold = models.IntegerField('售出数量')

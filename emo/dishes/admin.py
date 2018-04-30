@@ -6,5 +6,5 @@ from dishes.models import Order
 
 admin.site.register(Dishes)
 admin.site.register(Category)
-admin.site.register(Order)
+#admin.site.register(Order)
 # Register your models here.

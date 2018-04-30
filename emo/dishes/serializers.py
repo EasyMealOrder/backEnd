@@ -8,7 +8,13 @@ class DetailDishSerializer(serializers.ModelSerializer):
         model = Dishes
         exclude = ('soldout')
         
-       
+
+class DetailDishRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DishRecord
+        exclude = ('id')
+        
+               
 class SimpDishSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dishes
@@ -41,8 +47,4 @@ class DetailFeedbackSerializer(serializers.ModelSerializer):
         model = Feedback
         field = '__all__'
 
-        
-class SimpFeedbackSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Feedback
-        field = ('oderID','star')  
+

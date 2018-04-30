@@ -25,10 +25,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('dish/<int:dishid>/',dishes_api.getOneDishInfo,name="getOneDishInfo"),
     path('dish/all/',dishes_api.getAllDishInfo,name="getAllDishInfo"),
-    path('category/all/',dishes_api.getCategoryInfo,name="getCategoryInfo"),
+    path('category/',dishes_api.getCategoryInfo,name="getCategoryInfo"),
     path('order/count/',dishes_api.getOrderCount,name="getOrderCount"),
-    path('order/<int:orderid>/',dishes_api.getOneOrderInfo,name="getOneOrderInfo"),
+    path('order/<int:orderid>/',dishes_api.OneOrderInfo,name="OneOrderInfo"),
     path('order/pages/<int:numOfOnePage>/<int:page>/',dishes_api.getManyOrderInfo,name="getManyOrderInfo"),
+    path('feedback/count',dishes_api.getFeedbackCount,name="getFeedbackCount"),
     path('feedback/<int:orderid>/',dishes_api.getOneFeedbackInfo,name="getOneFeedbackInfo"),
     path('feedback/pages/<int:numOfOnePage>/<int:page>/',dishes_api.getManyFeedbackInfo,name="getManyFeedbackInfo"),
 ]
