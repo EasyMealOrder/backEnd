@@ -105,10 +105,11 @@ def ccOrderInfo(request):
             newdr.number = x['number']
             newdr.price = x['price']
             newdr.save()
-        return Response({'orderID',orderID})
+        return Response({'orderID',orderID},status=status.HTTP_201_CREATED)
     if data['type'] == 'cancel' :
         orderID = data['order']['id']
         Order.objects.filter(id=orderID).update(cancel=True)
+        return Response(status=status.HTTP_200_OK)
            
             
     
