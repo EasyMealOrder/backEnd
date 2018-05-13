@@ -9,42 +9,14 @@ class DetailDishSerializer(serializers.ModelSerializer):
         exclude = ('soldout')
         
 
-class DetailDishRecordSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DishRecord
-        exclude = ('id')
-        
-               
 class SimpDishSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dishes
         exclude = ('soldout','description')
         
-        
-class DetailOrderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Order
-        field = '__all__'
 
 class DetailCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         field = '__all__'
         
-class SimpOrderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Order
-        field = ('id','price','finished')
-        
-        
-class StatisticSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Statistic
-        field = '__all__'
-        
-class DetailFeedbackSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Feedback
-        field = '__all__'
-
-

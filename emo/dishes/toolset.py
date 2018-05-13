@@ -8,8 +8,7 @@ from django.db import models
 #return start, end,      you can using in slice
 #For example:  Feedback.objects.all().only('orderID','star')[start:end]
 #if out of range, return -1,-1
-def getStartEnd(ob, numOfOnePage, page):
-    count = ob.objects.all().count()
+def getStartEnd(count, numOfOnePage, page):
     if numOfOnePage*page-numOfOnePage >= count:
         return -1,-1
     if numOfOnePage < 1 or page < 1:

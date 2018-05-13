@@ -20,18 +20,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from dishes import views as dishes_api
+from order import views as order_api
+from statistic import views as sta_api
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('dish/',dishes_api.getAllDishInfo,name="getAllDishInfo"),
     path('dish/<int:dishid>/',dishes_api.getOneDishInfo,name="getOneDishInfo"),
-    path('dish/all/',dishes_api.getAllDishInfo,name="getAllDishInfo"),
     path('category/',dishes_api.getCategoryInfo,name="getCategoryInfo"),
-    path('order/count/',dishes_api.getOrderCount,name="getOrderCount"),
-    path('order/<int:orderid>/',dishes_api.OneOrderInfo,name="OneOrderInfo"),
-    path('order/pages/<int:numOfOnePage>/<int:page>/',dishes_api.getManyOrderInfo,name="getManyOrderInfo"),
-    path('feedback/count',dishes_api.getFeedbackCount,name="getFeedbackCount"),
-    path('feedback/<int:orderid>/',dishes_api.getOneFeedbackInfo,name="getOneFeedbackInfo"),
-    path('feedback/pages/<int:numOfOnePage>/<int:page>/',dishes_api.getManyFeedbackInfo,name="getManyFeedbackInfo"),
+    path('order/count/',order_api.getOrderCount,name="getOrderCount"),
+    path('order/<int:orderid>/',order_api.OneOrderInfo,name="OneOrderInfo"),
+    path('order/pages/<int:numOfOnePage>/<int:page>/',order_api.getManyOrderInfo,name="getManyOrderInfo"),
+    path('feedback/count',sta_api.getFeedbackCount,name="getFeedbackCount"),
+    path('feedback/<int:orderid>/',sta_api.getOneFeedbackInfo,name="getOneFeedbackInfo"),
+    path('feedback/pages/<int:numOfOnePage>/<int:page>/',sta_api.getManyFeedbackInfo,name="getManyFeedbackInfo"),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  
