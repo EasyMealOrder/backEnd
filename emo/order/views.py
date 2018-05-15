@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from order.serializers import  *
 from order.models import Order
 from dishes.toolset import getStartEnd,isRegCustomer
+from pandas.plotting._tools import table
 # Create your views here.
 
 
@@ -113,8 +114,14 @@ def ccOrderInfo(request):
         Order.objects.filter(id=orderID).update(cancel=True)
         return Response(status=status.HTTP_200_OK)
     
+    session_table = int(request.session['table']) if request.session.get('table', 0) else -1
     
-    tableNum = data['order']['table']
+    #如果没告知,用session的table号
+    tableNum = data['order']['table'] if data['order']['table'] >= 0 else session_table
+    
+    #如果都没有,返回负数订单号，表示出错了
+    if tableNum == -1:
+        return Response({'orderID',-1},status=status.HTTP_204_NO_CONTENT)
     
     if Order.objects.filter(table=tableNum).count() != 0:
         lastestOder = Order.objects.filter(table=tableNum).order_by('-id')[0]
