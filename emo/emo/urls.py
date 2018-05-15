@@ -1,6 +1,8 @@
 # coding:utf-8
 from django.conf import settings 
 from django.conf.urls.static import static
+from django.conf.urls import include
+
 
 """emo URL Configuration
 
@@ -24,6 +26,7 @@ from order import views as order_api
 from statistic import views as sta_api
 
 urlpatterns = [
+    path('accounts/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
     path('dish/',dishes_api.getAllDishInfo,name="getAllDishInfo"),
     path('dish/<int:dishid>/',dishes_api.getOneDishInfo,name="getOneDishInfo"),

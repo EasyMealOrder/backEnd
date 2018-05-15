@@ -1,5 +1,6 @@
 # coding:utf-8
-from django.db import models
+from django.contrib.auth.models import Group
+
 
 
 
@@ -16,3 +17,14 @@ def getStartEnd(count, numOfOnePage, page):
     start = numOfOnePage*(page-1)
     end = count  if numOfOnePage*page > count else numOfOnePage*page
     return start,end
+
+
+
+#确定用户是不是在消费者群组中
+
+def isRegCustomer(user):
+    group = Group.objects.get(name='customers')
+    if group in user.groups.all():
+        return True
+    else:
+        return False

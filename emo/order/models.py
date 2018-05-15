@@ -8,6 +8,7 @@ class Order(models.Model):
     finished=models.BooleanField('是否完成')
     cancel=models.BooleanField('是否取消')
     note = models.TextField('标注')
+    table = models.IntegerField('桌号')
     
     
     def __str__(self):
