@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'dishes',
     'order',
     'statistic',
+    'frontpage',
+    'payment',
     'rest_framework',
 ]
 

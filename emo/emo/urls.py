@@ -24,9 +24,11 @@ from django.urls import path
 from dishes import views as dishes_api
 from order import views as order_api
 from statistic import views as sta_api
+from frontpage import views as frp_api
 
 urlpatterns = [
-    path('accounts/', include('django.contrib.auth.urls')),
+    path('test/', frp_api.testSession,name='testSession'),           #test session
+    path('<int:table>/', frp_api.assignTable,name='assigntable'),
     path('admin/', admin.site.urls),
     path('dish/',dishes_api.getAllDishInfo,name="getAllDishInfo"),
     path('dish/<int:dishid>/',dishes_api.getOneDishInfo,name="getOneDishInfo"),

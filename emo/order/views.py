@@ -6,7 +6,7 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from order.serializers import  *
-from order.models import Order
+from order.models import Order,DishRecord
 from dishes.toolset import getStartEnd,isRegCustomer
 from pandas.plotting._tools import table
 # Create your views here.
@@ -26,6 +26,12 @@ def getOrderCount(request):
     serial = {'count':res}
     return Response(serial)
 
+
+
+
+
+
+
 @api_view(['GET'])
 @authentication_classes((SessionAuthentication, ))
 @permission_classes((IsAdminUser,))
@@ -33,6 +39,10 @@ def getUnfinishedOrderCount(request):
     res = Order.objects.filter(finished=False).count()
     serial = {'count':res}
     return Response(serial)
+
+
+
+
 
 
 
@@ -46,17 +56,45 @@ def getCancelOrderCount(request):
 
 
 
+
+
+
+
+
 @api_view(['GET'])
 @authentication_classes((SessionAuthentication, ))
 def OneOrderInfo(request,orderid):
     try:
         res = Order.objects.get(id=orderid).order_by('-id')
         serial_order = DetailOrderSerializer(res,many=False)
-        rec = DishRecord.obejects.filter(orderID=orderid)
-        serial_rec = DetailDishRecordSerializer(rec,many=True)
-        return Response({'orderInfo':serial_order.data,'records':serial_rec.data})
+        return Response( serial_order.data)
     except Order.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+
+
+
+
+
+
+@api_view(['GET'])
+@authentication_classes((SessionAuthentication, ))
+def getDishRecord(request, order):
+    #获取一个订单的所有菜
+    res = DishRecord.objects.filter(orderID=order)      
+    serial = DetailDishRecordSerializer(res,many=True)
+    return Response(serial.data)
+
+
+
+
+
+
+
+
+
+
 
 
 #下面的函数会根据参数吧结果分页并给出所需的那一页，一般用于目录，所以不会获取所有信息
@@ -95,6 +133,15 @@ def getManyOrderInfo(request, numOfOnePage, page):
     return Response(serial.data)
 
 
+
+
+
+
+
+
+
+
+
 '''
 request data format
 {
@@ -114,10 +161,11 @@ def ccOrderInfo(request):
         Order.objects.filter(id=orderID).update(cancel=True)
         return Response(status=status.HTTP_200_OK)
     
-    session_table = int(request.session['table']) if request.session.get('table', 0) else -1
+    if request.session.get('table'):
+        tableNum = request.session['table']
+    else:
+        tableNum = data['order']['table']
     
-    #如果没告知,用session的table号
-    tableNum = data['order']['table'] if data['order']['table'] >= 0 else session_table
     
     #如果都没有,返回负数订单号，表示出错了
     if tableNum == -1:
@@ -143,7 +191,6 @@ def ccOrderInfo(request):
             newdr = DishRecord()
             newdr.dishID = x['dishID']
             newdr.orderID=orderID
-            newdr.name = x['name']
             newdr.number = x['number']
             newdr.price = x['price']
             newdr.save()

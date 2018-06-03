@@ -18,7 +18,6 @@ class DishRecord(models.Model):
     orderID = models.BigIntegerField('订单号')
     dishID = models.IntegerField('菜编号')
     number = models.IntegerField('数量')
-    name = models.CharField('菜名',max_length = 256)
     price = models.FloatField('价格')
     
     def __str__(self):
