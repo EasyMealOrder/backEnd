@@ -1,7 +1,7 @@
-#写一下返回的json格式
+# 写一下返回的json格式
 
 
-##Order
+## Order
 
 返回的OrderRecord，OrderRecord是Order相关的一条条记录，由（orderID,dishID）标记，附带的还价格和数量
 
@@ -65,7 +65,7 @@
 }
 ```
 
-##Feedback
+## Feedback
 反馈吧，我也不知道有用没用。。用orderID查询可以得到
 ```
 {
