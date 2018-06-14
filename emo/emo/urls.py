@@ -25,6 +25,7 @@ from dishes import views as dishes_api
 from order import views as order_api
 from statistic import views as sta_api
 from frontpage import views as frp_api
+from login import views as login_api
 
 urlpatterns = [
     path('test/', frp_api.testSession,name='testSession'),           #test session
@@ -39,6 +40,10 @@ urlpatterns = [
     path('feedback/count',sta_api.getFeedbackCount,name="getFeedbackCount"),
     path('feedback/<int:orderid>/',sta_api.getOneFeedbackInfo,name="getOneFeedbackInfo"),
     path('feedback/pages/<int:numOfOnePage>/<int:page>/',sta_api.getManyFeedbackInfo,name="getManyFeedbackInfo"),
+    path('signup/',login_api.create_user,name="createUser"),
+    path('signin/',login_api.auth_view,name="createUser"),
+    path('signout/',login_api.logout,name="createUser"),
+    path('changePass/',login_api.change_passwd,name="createUser"),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  

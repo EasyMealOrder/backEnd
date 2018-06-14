@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from order.serializers import  *
 from order.models import Order,DishRecord
 from dishes.toolset import getStartEnd,isRegCustomer
-from pandas.plotting._tools import table
+#from pandas.plotting._tools import table
 # Create your views here.
 
 
@@ -65,7 +65,7 @@ def getCancelOrderCount(request):
 @authentication_classes((SessionAuthentication, ))
 def OneOrderInfo(request,orderid):
     try:
-        res = Order.objects.get(id=orderid).order_by('-id')
+        res = Order.objects.get(id=orderid)
         serial_order = DetailOrderSerializer(res,many=False)
         return Response( serial_order.data)
     except Order.DoesNotExist:

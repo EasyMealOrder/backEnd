@@ -12,7 +12,7 @@ class Order(models.Model):
     
     
     def __str__(self):
-        return '订单号'+self.id
+        return '订单号'+str(self.id)
 
 class DishRecord(models.Model):
     orderID = models.BigIntegerField('订单号')
@@ -21,4 +21,4 @@ class DishRecord(models.Model):
     price = models.FloatField('价格')
     
     def __str__(self):
-        return self.orderID + " - >" + self.dishID
+        return str(self.orderID) + " - >" + str(self.dishID)

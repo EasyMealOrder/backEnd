@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'statistic',
     'frontpage',
     'payment',
+    'login',
     'rest_framework',
 ]
 

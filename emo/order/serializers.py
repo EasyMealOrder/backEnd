@@ -12,9 +12,11 @@ class DetailOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         field = '__all__'
+        exclude = ()
 
 
 class SimpOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
+        exclude = ()
         field = ('id','price','finished')
