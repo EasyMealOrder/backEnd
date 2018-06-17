@@ -19,6 +19,7 @@ class DishRecord(models.Model):
     dishID = models.IntegerField('菜编号')
     number = models.IntegerField('数量')
     price = models.FloatField('价格')
+    finished=models.BooleanField('是否完成')
     
     def __str__(self):
         return str(self.orderID) + " - >" + str(self.dishID)

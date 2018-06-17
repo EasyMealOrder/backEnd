@@ -11,6 +11,7 @@
     "dishID" :2,
     "number":2,
     "price" :12
+    "finished":True
 }
 ```
 

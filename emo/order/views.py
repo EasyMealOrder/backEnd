@@ -13,6 +13,13 @@ from dishes.toolset import getStartEnd,isRegCustomer
 
 
 #获取count，即数量
+#根据不同user类型返回不同的数量
+#返回的json格式
+'''
+{
+	"count":12
+}
+'''
 @api_view(['GET'])
 @authentication_classes((SessionAuthentication, ))
 def getOrderCount(request):
@@ -29,9 +36,14 @@ def getOrderCount(request):
 
 
 
-
-
-
+#获取没有完成的订单的count，即数量，
+#厨师端专用
+#返回的json格式
+'''
+{
+	"count":12
+}
+'''
 @api_view(['GET'])
 @authentication_classes((SessionAuthentication, ))
 @permission_classes((IsAdminUser,))
@@ -46,6 +58,15 @@ def getUnfinishedOrderCount(request):
 
 
 
+
+#获取取消掉的订单的count，即数量，
+#厨师端专用
+#返回的json格式
+'''
+{
+	"count":12
+}
+'''
 @api_view(['GET'])
 @authentication_classes((SessionAuthentication, ))
 @permission_classes((IsAdminUser,))
@@ -58,9 +79,47 @@ def getCancelOrderCount(request):
 
 
 
+#获取没有完成的订单，返回的是详细的订单信息
+#厨师端专用
+'''
+格式
+[
+ {
+    "id" :2,
+    "username"  :"anon",
+    "price" :12.8,
+    "finished" :True,
+    "cancel" :False,
+    "note"  :"shiiiit",
+    "table"  :3
+ },....
+]
+'''
+@api_view(['GET'])
+@authentication_classes((SessionAuthentication, ))
+@permission_classes((IsAdminUser,))
+def getUnfinishedOrder(request):
+    res = Order.objects.filter(finished=False,cancel=False)
+    serial = DetailOrderSerializer(res,many=True)
+    return Response(serial.data)
 
 
 
+
+
+#获取单个订单的信息，需要订单id为参数
+'''
+format:
+{
+    "id" :2,
+    "username"  :"anon",
+    "price" :12.8,
+    "finished" :True,
+    "cancel" :False,
+    "note"  :"shiiiit",
+    "table"  :3
+}
+'''
 @api_view(['GET'])
 @authentication_classes((SessionAuthentication, ))
 def OneOrderInfo(request,orderid):
@@ -75,8 +134,19 @@ def OneOrderInfo(request,orderid):
 
 
 
-
-
+#获取订单下所有菜的信息，需要订单id为参数
+'''
+format:
+[
+ {
+    "orderID" :1,
+    "dishID" :2,
+    "number":2,
+    "price" :12
+    "finished":True
+ },...
+]
+'''
 
 @api_view(['GET'])
 @authentication_classes((SessionAuthentication, ))
@@ -98,6 +168,16 @@ def getDishRecord(request, order):
 
 
 #下面的函数会根据参数吧结果分页并给出所需的那一页，一般用于目录，所以不会获取所有信息
+'''
+[
+   {
+      "id" :2,
+      "price" :12,
+      "finished" :True,
+
+	},...
+]
+'''
 @api_view(['GET'])
 @authentication_classes((SessionAuthentication, ))
 def getManyOrderInfo(request, numOfOnePage, page):
@@ -141,7 +221,7 @@ def getManyOrderInfo(request, numOfOnePage, page):
 
 
 
-
+#点餐发送订单，create是创建，cancel是取消
 '''
 request data format
 {
@@ -149,6 +229,10 @@ type:'create'   or   'cancel'
 order:  Order json with cancel  == true or false
 dishrecord: [dishr1,dishr2...]
 }
+
+
+返回格式，-1的话说明失败或者该桌子还没结账
+{"orderID": 1121}
 '''
 @api_view(['POST'])
 @authentication_classes((SessionAuthentication, ))
@@ -193,12 +277,39 @@ def ccOrderInfo(request):
             newdr.orderID=orderID
             newdr.number = x['number']
             newdr.price = x['price']
+            newdr.finished = False
             newdr.save()
         return Response({'orderID',orderID},status=status.HTTP_201_CREATED)
     
     
     
-           
-            
-    
+#staff才可以用的方法，把某订单勾选为完成
+#返回值为{"orderID":111},可以不用理会           
+@api_view(['POST'])
+@authentication_classes((SessionAuthentication, ))
+@permission_classes((IsAdminUser,))            
+def finishOrder(request):
+	data=request.data
+	orderID = data['orderID']
+	Order.objects.filter(orderID = orderID).update(finished = True)
+	DishRecord.objects.filter(orderID =orderID).update(finished = True)
+	return Response({'orderID',orderID},status=status.HTTP_201_CREATED)
+
+
+
+
+#完成单道菜
+#返回值为{"orderID":111},可以不用理会
+@api_view(['POST'])
+@authentication_classes((SessionAuthentication, ))
+@permission_classes((IsAdminUser,))            
+def finishDish(request):
+	data=request.data
+	orderID = data['orderID']
+	dishID = data['dishID']
+	DishRecord.objects.filter(orderID =orderID,dishID=dishID).update(finished = True)
+	return Response({'orderID',orderID},status=status.HTTP_201_CREATED)
+
+
+
     

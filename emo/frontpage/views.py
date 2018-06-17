@@ -1,8 +1,9 @@
+#coding:utf-8
 from django.shortcuts import render
 from django.http.response import HttpResponse
 
 
-#ÓÃsession±ê¼Ç
+#åˆ†é…æ¡Œå­
 # Create your views here.
 def assignTable(request,table):
     
