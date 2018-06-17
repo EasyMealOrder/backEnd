@@ -26,6 +26,7 @@ from order import views as order_api
 from statistic import views as sta_api
 from frontpage import views as frp_api
 from login import views as login_api
+from websocket import views as ws_api
 
 urlpatterns = [
     path('test/', frp_api.testSession,name='testSession'),           #test session
@@ -44,6 +45,8 @@ urlpatterns = [
     path('signin/',login_api.auth_view,name="createUser"),
     path('signout/',login_api.logout,name="createUser"),
     path('changePass/',login_api.change_passwd,name="createUser"),
+    path('index2/',ws_api.index2),
+    path('echo/',ws_api.echo),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  

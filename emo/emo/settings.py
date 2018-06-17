@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'payment',
     'login',
     'rest_framework',
+    'websocket',
 ]
 
 MIDDLEWARE = [
