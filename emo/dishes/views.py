@@ -24,8 +24,8 @@ def getOneDishInfo(request, dishid):
 
 @api_view(['GET'])
 def getAllDishInfo(request):
-    res = Dishes.objects.filter(soldout=False).defer('soldout','description')
-    serial = SimpDishSerializer(res,many=True)
+    res = Dishes.objects.filter(soldout=False)
+    serial = DetailDishSerializer(res,many=True)
     return Response(serial.data)
 
 

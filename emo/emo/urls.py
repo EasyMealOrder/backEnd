@@ -30,20 +30,40 @@ from websocket import views as ws_api
 
 urlpatterns = [
     path('test/', frp_api.testSession,name='testSession'),           #test session
-    path('<int:table>/', frp_api.assignTable,name='assigntable'),
     path('admin/', admin.site.urls),
+
+
     path('dish/',dishes_api.getAllDishInfo,name="getAllDishInfo"),
     path('dish/<int:dishid>/',dishes_api.getOneDishInfo,name="getOneDishInfo"),
     path('category/',dishes_api.getCategoryInfo,name="getCategoryInfo"),
+
+
+
     path('order/count/',order_api.getOrderCount,name="getOrderCount"),
+    path('order/ufcount/',order_api.getUnfinishedOrderCount,name="getUnfinishedOrderCount"),
+    path('order/cancelcount/',order_api.getCancelOrderCount,name="getCancelOrderCount"),
+    path('order/unfinished/',order_api.getUnfinishedOrder,name="getUnfinishedOrder"),
     path('order/<int:orderid>/',order_api.OneOrderInfo,name="OneOrderInfo"),
     path('order/pages/<int:numOfOnePage>/<int:page>/',order_api.getManyOrderInfo,name="getManyOrderInfo"),
+    path('dishrecord/<int:order>/',order_api.getDishRecord,name="getDishRecord"),
+	path('order/create/',order_api.createOrder,name="createOrder"),
+	path('order/cancel/',order_api.cancelOrder,name="cancelOrder"),
+	path('order/finish/',order_api.finishOrder,name="finishOrder"),
+	path('dishrecord/finish/',order_api.finishDish,name="finishDish"),
+
+
     path('feedback/count',sta_api.getFeedbackCount,name="getFeedbackCount"),
     path('feedback/<int:orderid>/',sta_api.getOneFeedbackInfo,name="getOneFeedbackInfo"),
     path('feedback/pages/<int:numOfOnePage>/<int:page>/',sta_api.getManyFeedbackInfo,name="getManyFeedbackInfo"),
+
+
+
     path('signup/',login_api.create_user,name="createUser"),
     path('signin/',login_api.auth_view,name="createUser"),
     path('signout/',login_api.logout,name="createUser"),
+
+
+
     path('changePass/',login_api.change_passwd,name="createUser"),
     path('index2/',ws_api.index2),
     path('echo/',ws_api.echo),

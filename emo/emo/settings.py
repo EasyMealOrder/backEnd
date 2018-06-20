@@ -30,6 +30,7 @@ ALLOWED_HOSTS = ['*']
 
 
 # Application definition
+MIDDLEWARE_CLASSES = 'dwebsocket.middleware.WebSocketMiddleware'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -45,7 +46,7 @@ INSTALLED_APPS = [
     'payment',
     'login',
     'rest_framework',
-    'websocket',
+    'dwebsocket',
 ]
 
 MIDDLEWARE = [

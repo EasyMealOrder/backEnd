@@ -15,7 +15,7 @@ class Order(models.Model):
         return '订单号'+str(self.id)
 
 class DishRecord(models.Model):
-    orderID = models.BigIntegerField('订单号')
+    orderID = models.ForeignKey('Order',on_delete=models.CASCADE)
     dishID = models.IntegerField('菜编号')
     number = models.IntegerField('数量')
     price = models.FloatField('价格')

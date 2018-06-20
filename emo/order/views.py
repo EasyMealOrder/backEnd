@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from order.serializers import  *
 from order.models import Order,DishRecord
 from dishes.toolset import getStartEnd,isRegCustomer
+from frontpage.models import Table
 #from pandas.plotting._tools import table
 # Create your views here.
 
@@ -79,6 +80,7 @@ def getCancelOrderCount(request):
 
 
 
+
 #获取没有完成的订单，返回的是详细的订单信息
 #厨师端专用
 '''
@@ -99,9 +101,11 @@ def getCancelOrderCount(request):
 @authentication_classes((SessionAuthentication, ))
 @permission_classes((IsAdminUser,))
 def getUnfinishedOrder(request):
-    res = Order.objects.filter(finished=False,cancel=False)
+    res = Order.objects.filter(finished=False)
     serial = DetailOrderSerializer(res,many=True)
     return Response(serial.data)
+
+
 
 
 
@@ -221,12 +225,11 @@ def getManyOrderInfo(request, numOfOnePage, page):
 
 
 
-#点餐发送订单，create是创建，cancel是取消
+#点餐发送订单，create是创建
 '''
 request data format
 {
-type:'create'   or   'cancel'
-order:  Order json with cancel  == true or false
+order:  {}
 dishrecord: [dishr1,dishr2...]
 }
 
@@ -236,32 +239,30 @@ dishrecord: [dishr1,dishr2...]
 '''
 @api_view(['POST'])
 @authentication_classes((SessionAuthentication, ))
-def ccOrderInfo(request):
+def createOrder(request):
     #cc means create and cancel
     data = request.data
     
-    if data['type'] == 'cancel' :
-        orderID = data['order']['id']
-        Order.objects.filter(id=orderID).update(cancel=True)
-        return Response(status=status.HTTP_200_OK)
-    
+    tableUUID = ''
+    tableNum = -1
     if request.session.get('table'):
-        tableNum = request.session['table']
+        tableUUID = request.session['table']
     else:
-        tableNum = data['order']['table']
+        Response({'orderID',-1})    # no sesssion
     
+
+
+    tables = Table.objects.filter(uuid=tableUUID)
+    if tables.count() != 0:
+        tableNum = tables[0].id
+    else:
+        Response({'orderID',-2})    # wrong uuid
+
+    if tables[0].occupy == True:
+        return Response({'orderID',-3})      # table using
+
     
-    #如果都没有,返回负数订单号，表示出错了
-    if tableNum == -1:
-        return Response({'orderID',-1},status=status.HTTP_204_NO_CONTENT)
-    
-    if Order.objects.filter(table=tableNum).count() != 0:
-        lastestOder = Order.objects.filter(table=tableNum).order_by('-id')[0]
-        #订单进行中,却有针对同一桌新订单出现，返回负数订单号
-        if lastestOder.cancel == False and lastestOder.finished == False:
-            return Response({'orderID',-1},status=status.HTTP_204_NO_CONTENT)
-            
-    if data['type'] == 'create':
+    try:        
         neworder = Order()
         neworder.username = request.user.username if request.user.username != '' else 'anon'
         neworder.price = data['order']['price']
@@ -279,36 +280,92 @@ def ccOrderInfo(request):
             newdr.price = x['price']
             newdr.finished = False
             newdr.save()
-        return Response({'orderID',orderID},status=status.HTTP_201_CREATED)
+        tables.update(occupy=True)
+        return Response({'orderID',orderID})
+    except BaseException:
+        return Response({'orderID',-4})
     
     
+
+
+
+
+
+
+
+@api_view(['POST'])
+@authentication_classes((SessionAuthentication, ))
+def cancelOrder(request):
+    data = request.data
+
+    tableUUID = ''
+    tableNum = -1
+    if request.session.get('table'):
+        tableUUID = request.session['table']
+    else:
+        Response({"success":False})    # no sesssion
     
+
+
+    tables = Table.objects.filter(uuid=tableUUID)
+    if tables.count() != 0:
+        tableNum = tables[0].id
+    else:
+        Response({"success":False})    # wrong uuid
+
+
+    try:
+        orderID = data['orderID']
+        order = Order.objects.get(id=orderID)
+        if order.table != tableNum:
+            return Response({"success":False})
+        order.cancel= True
+        order.finished = True
+        order.save()
+        tables.update(occupy=False)
+        return Response({"success":True})
+    except BaseException:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+
 #staff才可以用的方法，把某订单勾选为完成
-#返回值为{"orderID":111},可以不用理会           
+#需要post{"orderID"：xxx}
+#返回值为{"orderID":111},可以不用理会 
+# 出错返回-1          
 @api_view(['POST'])
 @authentication_classes((SessionAuthentication, ))
 @permission_classes((IsAdminUser,))            
 def finishOrder(request):
-	data=request.data
-	orderID = data['orderID']
-	Order.objects.filter(orderID = orderID).update(finished = True)
-	DishRecord.objects.filter(orderID =orderID).update(finished = True)
-	return Response({'orderID',orderID},status=status.HTTP_201_CREATED)
+    data=request.data
+    try:
+        orderID = data['orderID']
+        orders = Order.objects.filter(orderID = orderID)
+        Table.objects.filter(id=tableNum).update(occupy=False)
+        orders.update(finished = True)
+        DishRecord.objects.filter(orderID =orderID).update(finished = True)
+        return Response({'orderID',orderID})
+    except BaseException:
+        return Response({'orderID',-1})
 
 
 
 
 #完成单道菜
-#返回值为{"orderID":111},可以不用理会
+#需要传入参数{"orderID":xxx,"dishID":xxx}
+#返回值为{"orderID":111},返回负数为失败
 @api_view(['POST'])
 @authentication_classes((SessionAuthentication, ))
 @permission_classes((IsAdminUser,))            
 def finishDish(request):
-	data=request.data
-	orderID = data['orderID']
-	dishID = data['dishID']
-	DishRecord.objects.filter(orderID =orderID,dishID=dishID).update(finished = True)
-	return Response({'orderID',orderID},status=status.HTTP_201_CREATED)
+    try:
+        data=request.data
+        orderID = data['orderID']
+        dishID = data['dishID']
+        DishRecord.objects.filter(orderID =orderID,dishID=dishID).update(finished = True)
+        return Response({'orderID',orderID})
+    except BaseException:
+        return Response({'orderID',-1})
 
 
 
