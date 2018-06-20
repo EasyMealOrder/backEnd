@@ -6,20 +6,19 @@ from dishes.models import *
 class DetailDishSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dishes
-        exclude = ('soldout')
+        exclude = ('soldout',)
         field = '__all__'
         
 
 class SimpDishSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dishes
-        exclude = ('soldout','description')
+        exclude = ('soldout','description',)
         field = '__all__'
         
 
 class DetailCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        exclude = ()
         field = '__all__'
         
