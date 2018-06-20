@@ -5,7 +5,7 @@ from order.models import  DishRecord,Order
 class DetailDishRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = DishRecord
-        exclude = ('id')
+        exclude = ('id',)
         
      
 class DetailOrderSerializer(serializers.ModelSerializer):
