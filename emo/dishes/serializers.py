@@ -20,5 +20,6 @@ class SimpDishSerializer(serializers.ModelSerializer):
 class DetailCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
+        exclude=()
         field = '__all__'
         
