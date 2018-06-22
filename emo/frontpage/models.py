@@ -8,4 +8,4 @@ class Table(models.Model):
     occupy = models.BooleanField('是否使用中')
     
     def __str__(self):
-        return self.id
+        return '桌面'+str(self.id)

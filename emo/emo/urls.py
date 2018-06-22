@@ -29,7 +29,9 @@ from login import views as login_api
 from websocket import views as ws_api
 
 urlpatterns = [
-    path('test/', frp_api.testSession,name='testSession'),           #test session
+    path('test/', frp_api.testSession,name='testSession'),
+    path('tables/', frp_api.getTables,name='getTables'),
+    path('table/<slug:table>/', frp_api.assignTable,name='assignTable'),               #test session
     path('admin/', admin.site.urls),
 
 
