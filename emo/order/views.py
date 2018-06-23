@@ -228,13 +228,18 @@ def getManyOrderInfo(request, numOfOnePage, page):
 #点餐发送订单，create是创建
 '''
 request data format
+
 {
-order:  {}
-dishrecord: [dishr1,dishr2...]
+"order":{
+"price":14,
+"note":"more salt"
+},
+"dishrecord":[{"dishID":1,"number":1,"price":14,"name":"shit"
+}]
 }
 
 
-返回格式，-1的话说明失败或者该桌子还没结账
+负数说明有错误
 {"orderID": 1121}
 '''
 @api_view(['POST'])
@@ -266,16 +271,17 @@ def createOrder(request):
         neworder = Order()
         neworder.username = request.user.username if request.user.username != '' else 'anon'
         neworder.price = data['order']['price']
-        neworder.finished = data['order']['finished']
+        neworder.finished = False
         neworder.table=tableNum
         neworder.cancel=False
         neworder.note=data['order']['note']
-        neworder = neworder.save()
+        neworder.save()
         orderID = neworder.id
         for x in data['dishrecord']:
             newdr = DishRecord()
             newdr.dishID = x['dishID']
-            newdr.orderID=orderID
+            newdr.name = x['name']
+            newdr.orderID = neworder
             newdr.number = x['number']
             newdr.price = x['price']
             newdr.finished = False
