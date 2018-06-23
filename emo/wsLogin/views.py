@@ -10,7 +10,6 @@ import string
 
 # Create your views here.
 @csrf_exempt
-<<<<<<< HEAD
 def wxLogin(request):
     #value = ''
     #try:
@@ -49,10 +48,6 @@ def wxLogin(request):
         #return response
         return HttpResponse(json.dumps(responseData, ensure_ascii=False), content_type="application/json")
     '''
-=======
-def login(request):
-    session = request.POST.get("session_id")
->>>>>>> cc28d0f05bd36f46a437d86a57c2a6a0fbac8735
     try:
         existUser = WxUser.objects.get(session_id=session)
         responseData = {'openid': existUser.id, 'nickname': existUser.nickname, 'sex': existUser.sex, 'province': existUser.province, 'city': existUser.city, 'country': existUser.country, 'headimgurl': existUser.headimgurl, 'privilege': '超级加倍', 'unionid': '3838438'}
