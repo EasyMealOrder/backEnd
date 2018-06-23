@@ -28,6 +28,7 @@ def auth_view(request):
             return HttpResponse(json.dumps(resp, ensure_ascii=False), content_type="application/json")
     except BaseException:
         return Response({'orderID',-4})
+
 @csrf_exempt
 def logout_view(request):
     if not request.user.is_authenticated:

@@ -61,12 +61,12 @@ urlpatterns = [
 
 
     path('signup/',login_api.create_user,name="createUser"),
-    path('signin/',login_api.auth_view,name="createUser"),
-    path('signout/',login_api.logout,name="createUser"),
+    path('signin/',login_api.auth_view,name="signin"),
+    path('signout/',login_api.logout_view,name="signout"),
 
 
 
-    path('changePass/',login_api.change_passwd,name="createUser"),
+    path('changePass/',login_api.change_passwd,name="changePass"),
     path('index2/',ws_api.index2),
     path('echo/',ws_api.echo),
 ]
