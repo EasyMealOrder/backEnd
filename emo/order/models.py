@@ -17,7 +17,7 @@ class Order(models.Model):
 class DishRecord(models.Model):
     orderID = models.ForeignKey('Order',on_delete=models.CASCADE)
     dishID = models.IntegerField('菜编号')
-    name = models.TextField('菜名')
+    name = models.CharField('菜名', max_length=150)
     number = models.IntegerField('数量')
     price = models.FloatField('价格')
     finished=models.BooleanField('是否完成')
