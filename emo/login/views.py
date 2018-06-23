@@ -9,18 +9,22 @@ import json
 def auth_view(request):
     username=request.POST.get("username")       # 获取用户名
     password=request.POST.get("password")       # 获取用户的密码
+    print("username"+username)
+    print("password"+password)
     
-    user=authenticate(username=username,password=password)  # 验证用户名和密码，返回用户对象
-    
-    if user:                        # 如果用户对象存在
-        login(request,user)         # 用户登陆
-        resp = {'success': True, 'detail': 'login success!'}
-        return HttpResponse(json.dumps(resp, ensure_ascii=False), content_type="application/json")
-    
-    else:
-        resp = {'success': False, 'detail': 'user doesn\'t exist or the password is wrong!'}
-        return HttpResponse(json.dumps(resp, ensure_ascii=False), content_type="application/json")
-
+    try:
+        user=authenticate(username=username,password=password)  # 验证用户名和密码，返回用户对象
+        
+        if user:                        # 如果用户对象存在
+            login(request,user)         # 用户登陆
+            resp = {'success': True, 'detail': 'login success!'}
+            return HttpResponse(json.dumps(resp, ensure_ascii=False), content_type="application/json")
+        
+        else:
+            resp = {'success': False, 'detail': 'user doesn\'t exist or the password is wrong!'}
+            return HttpResponse(json.dumps(resp, ensure_ascii=False), content_type="application/json")
+    except BaseException:
+        return Response({'orderID',-4})
 @csrf_exempt
 def logout_view(request):
     if not request.user.is_authenticated:
