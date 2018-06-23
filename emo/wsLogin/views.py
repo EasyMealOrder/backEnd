@@ -8,9 +8,13 @@ from wsLogin.models import WxUser
 @csrf_exempt
 def login(request):
     session = request.POST.get("session_id")
+    print(session)
     try:
         existUser = WxUser.objects.get(session_id=session)
         responseData = {'openid': existUser.id, 'nickname': existUser.nickname, 'sex': existUser.sex, 'province': existUser.province, 'city': existUser.city, 'country': existUser.country, 'headimgurl': existUser.headimgurl, 'privilege': '超级加倍', 'unionid': '3838438'}
+        #response = HttpResponse(json.dumps(responseData, ensure_ascii=False), content_type="application/json")
+        #response.set_cookie('my_cookie','cookie value')
+        #return response
         return HttpResponse(json.dumps(responseData, ensure_ascii=False), content_type="application/json")
     except BaseException:
         user = WxUser()
