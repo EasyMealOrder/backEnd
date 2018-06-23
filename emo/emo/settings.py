@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'login',
     'rest_framework',
     'websocket',
+    'wsLogin',
 ]
 
 MIDDLEWARE = [

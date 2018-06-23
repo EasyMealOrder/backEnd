@@ -27,6 +27,7 @@ from statistic import views as sta_api
 from frontpage import views as frp_api
 from login import views as login_api
 from websocket import views as ws_api
+from wsLogin import views as wxLogin_api
 
 urlpatterns = [
     path('test/', frp_api.testSession,name='testSession'),
@@ -67,8 +68,9 @@ urlpatterns = [
 
 
     path('changePass/',login_api.change_passwd,name="changePass"),
-    path('index2/',ws_api.index2),
     path('echo/',ws_api.echo),
+
+    #path('')
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  
