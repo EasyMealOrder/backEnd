@@ -27,7 +27,7 @@ def getOrderCount(request):
     user = request.user
     if user.is_staff == True:
         res = Order.objects.all().count()
-    elif user == django.contrib.auth.models.AnonymousUser:
+    elif  not user.is_authenticated:
         res = 0
     else:
         res = Order.objects.filter(username=user.username).count()
@@ -188,7 +188,7 @@ def getManyOrderInfo(request, numOfOnePage, page):
     user = request.user
     
     #注册用户会返回属于他的订单
-    if user != django.contrib.auth.models.AnonymousUser and (not user.is_staff):
+    if user.is_authenticated and (not user.is_staff):
         
         count = Order.objects.filter(username=user.username).count()
         start,end = getStartEnd(count,numOfOnePage, page)
@@ -243,7 +243,7 @@ request data format
 @api_view(['POST'])
 @authentication_classes((SessionAuthentication, ))
 def createOrder(request):
-    if request.user == django.contrib.auth.models.AnonymousUser:
+    if request.user == AnonymousUser:
         return {'orderID',-6}
 
     #cc means create and cancel
