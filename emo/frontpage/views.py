@@ -8,38 +8,19 @@ from frontpage.models import Table
 from frontpage.serializers import DetailTableSerializer
 #分配桌子
 # Create your views here.
+@api_view(['GET'])
 def assignTable(request,table):
     
-    if request.session.get('table'):
-        
-        if request.session['table'] != table:
-            return HttpResponseRedirect('/table/'+request.session['table']+'/')
-            
-        #render front page
-        try:
-            Table.objects.get(uuid=table)
-            return HttpResponse('Welcome !  You have old session, table uuid is'+ table)
-        except BaseException:
-            return HttpResponseNotFound('no such table')
+    try:
+        tableObj = Table.objects.get(id=table)
+    except BaseException:
+        return Response({"table":-1})
+    
 
-    else:
-        try:
-            Table.objects.get(uuid=table)
-            request.session['table'] = table
-            return HttpResponse('Welcome !  You have new session, table uuid is'+ table)
-        except BaseException:
-            return HttpResponseNotFound('no such table')
-        
-        
-        #render front page
-        return HttpResponse('Welcome !  You are new, table id is'+str(table))
-
-
-def testSession(request):
-    if request.session.get('table'):
-        return HttpResponse('Welcome !  You already have session, table uuid is'+request.session['table'])
-    else:
-        return HttpResponse('No session')
+    if tableObj.occupy == True:
+        return Response({"table":-2})
+    
+    return Response({"table":table})
 
 
 @api_view(['GET'])

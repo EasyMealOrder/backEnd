@@ -60,7 +60,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'emo.urls'
-
+SESSION_COOKIE_AGE=60*60*24
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
