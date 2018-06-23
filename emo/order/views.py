@@ -27,10 +27,10 @@ def getOrderCount(request):
     user = request.user
     if user.is_staff == True:
         res = Order.objects.all().count()
-    elif isRegCustomer(user):
-        res = Order.objects.filter(username=user.username).count()
+    elif user == django.contrib.auth.models.AnonymousUser:
+        res = 0
     else:
-        res = 1
+        res = Order.objects.filter(username=user.username).count()
     serial = {'count':res}
     return Response(serial)
 
@@ -188,7 +188,7 @@ def getManyOrderInfo(request, numOfOnePage, page):
     user = request.user
     
     #注册用户会返回属于他的订单
-    if isRegCustomer(user):
+    if user != django.contrib.auth.models.AnonymousUser and (not user.is_staff):
         
         count = Order.objects.filter(username=user.username).count()
         start,end = getStartEnd(count,numOfOnePage, page)
@@ -208,10 +208,7 @@ def getManyOrderInfo(request, numOfOnePage, page):
         
      #匿名用户只返回一个最新的订单，桌号根据session来获取 
     else:
-        if request.session.get('table',default=None):
-            res = Order.objects.filter(table=int(request.session['table'])).order_by('-id')[0:1]  
-        else:
-            return Response([])
+        return Response([])
         
     serial = SimpOrderSerializer(res,many=True)
     return Response(serial.data)
@@ -228,54 +225,57 @@ def getManyOrderInfo(request, numOfOnePage, page):
 #点餐发送订单，create是创建
 '''
 request data format
+
 {
-order:  {}
-dishrecord: [dishr1,dishr2...]
+"order":{
+"price":14,
+"note":"more salt"
+"table":1
+},
+"dishrecord":[{"dishID":1,"number":1,"price":14,"name":"shit"
+}]
 }
 
 
-返回格式，-1的话说明失败或者该桌子还没结账
+负数说明有错误
 {"orderID": 1121}
 '''
 @api_view(['POST'])
 @authentication_classes((SessionAuthentication, ))
 def createOrder(request):
+    if request.user == django.contrib.auth.models.AnonymousUser:
+        return {'orderID',-6}
+
     #cc means create and cancel
     data = request.data
     
-    tableUUID = ''
     tableNum = -1
-    if request.session.get('table'):
-        tableUUID = request.session['table']
-    else:
-        Response({'orderID',-1})    # no sesssion
-    
+    try:
+        tableNum = data['order']['table']
+        tables = Table.objects.get(id=tableNum)
+    except BaseException:
+        return Response({'orderID',-1})
 
 
-    tables = Table.objects.filter(uuid=tableUUID)
-    if tables.count() != 0:
-        tableNum = tables[0].id
-    else:
-        Response({'orderID',-2})    # wrong uuid
-
-    if tables[0].occupy == True:
+    if tables.occupy == True:
         return Response({'orderID',-3})      # table using
 
     
     try:        
         neworder = Order()
-        neworder.username = request.user.username if request.user.username != '' else 'anon'
+        neworder.username = request.user.username
         neworder.price = data['order']['price']
-        neworder.finished = data['order']['finished']
+        neworder.finished = False
         neworder.table=tableNum
         neworder.cancel=False
         neworder.note=data['order']['note']
-        neworder = neworder.save()
+        neworder.save()
         orderID = neworder.id
         for x in data['dishrecord']:
             newdr = DishRecord()
             newdr.dishID = x['dishID']
-            newdr.orderID=orderID
+            newdr.name = x['name']
+            newdr.orderID = neworder
             newdr.number = x['number']
             newdr.price = x['price']
             newdr.finished = False
@@ -290,7 +290,13 @@ def createOrder(request):
 
 
 
-
+#格式如下
+#{
+# "orderID":xxx
+# }
+#取消订单，会验证用户session
+#
+#
 
 
 @api_view(['POST'])
@@ -298,34 +304,17 @@ def createOrder(request):
 def cancelOrder(request):
     data = request.data
 
-    tableUUID = ''
-    tableNum = -1
-    if request.session.get('table'):
-        tableUUID = request.session['table']
-    else:
-        Response({"success":False})    # no sesssion
-    
-
-
-    tables = Table.objects.filter(uuid=tableUUID)
-    if tables.count() != 0:
-        tableNum = tables[0].id
-    else:
-        Response({"success":False})    # wrong uuid
-
-
     try:
         orderID = data['orderID']
-        order = Order.objects.get(id=orderID)
-        if order.table != tableNum:
-            return Response({"success":False})
+        order = Order.objects.get(id=orderID, username = request.user.username)
         order.cancel= True
         order.finished = True
         order.save()
-        tables.update(occupy=False)
+        
+        Table.objects.filter(id=order.table).update(occupy=False)
         return Response({"success":True})
     except BaseException:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"success":False})
 
 
 

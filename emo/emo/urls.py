@@ -21,8 +21,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from dishes import views as dishes_api
 from order import views as order_api
+from dishes import views as dishes_api
 from statistic import views as sta_api
 from frontpage import views as frp_api
 from login import views as login_api
@@ -30,9 +30,8 @@ from websocket import views as ws_api
 from wsLogin import views as wxLogin_api
 
 urlpatterns = [
-    path('test/', frp_api.testSession,name='testSession'),
     path('tables/', frp_api.getTables,name='getTables'),
-    path('table/<slug:table>/', frp_api.assignTable,name='assignTable'),               #test session
+    path('table/<int:table>/', frp_api.assignTable,name='assignTable'),               
     path('admin/', admin.site.urls),
 
 
