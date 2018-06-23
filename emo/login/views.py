@@ -9,8 +9,11 @@ import json
 def auth_view(request):
     username=request.POST.get("username")       # 获取用户名
     password=request.POST.get("password")       # 获取用户的密码
-    print("username"+username)
-    print("password"+password)
+    try:
+        print(type(username))
+        print(type(password))
+    except BaseException:
+        return Response({'success',False})
     
     try:
         user=authenticate(username=username,password=password)  # 验证用户名和密码，返回用户对象
