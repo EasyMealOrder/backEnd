@@ -248,8 +248,8 @@ request data format
 @authentication_classes((SessionAuthentication, ))
 def createOrder(request):
     print(2222222)
-    if request.user.is_authenticated:
-        return {'orderID',-6}
+    if not request.user.is_authenticated:
+        return Response{'orderID',-6}
 
     #cc means create and cancel
     print(2222222)
