@@ -191,6 +191,8 @@ def getManyOrderInfo(request, numOfOnePage, page):
     if user.is_authenticated and (not user.is_staff):
         
         count = Order.objects.filter(username=user.username).count()
+        if count == 0:
+            return Response([])
         start,end = getStartEnd(count,numOfOnePage, page)
         if start == -1:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -201,6 +203,8 @@ def getManyOrderInfo(request, numOfOnePage, page):
         
         
         count = Order.objects.all().count()
+        if count == 0:
+            return Response([])
         start,end = getStartEnd(count,numOfOnePage, page)
         if start == -1:
             return Response(status=status.HTTP_404_NOT_FOUND)
