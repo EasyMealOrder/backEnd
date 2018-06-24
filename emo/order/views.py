@@ -260,7 +260,7 @@ def createOrder(request):
     
     tableNum = -1
     try:
-        print(type(data))
+        print(type(data.order))
         js = json.loads(data)
         print(js)
         print(data['dishrecord'])
