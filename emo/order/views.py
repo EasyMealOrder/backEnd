@@ -9,6 +9,7 @@ from order.serializers import  *
 from order.models import Order,DishRecord
 from dishes.toolset import getStartEnd,isRegCustomer
 from frontpage.models import Table
+import json
 #from pandas.plotting._tools import table
 # Create your views here.
 
@@ -260,6 +261,9 @@ def createOrder(request):
     tableNum = -1
     try:
         tableNum = data['order']['table']
+        print(type(data))
+        js = json.loads(data)
+        print(js)
         print(data['dishrecord'])
         print(data['order'])
         print(tableNum)
