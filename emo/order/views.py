@@ -262,6 +262,7 @@ def createOrder(request):
         tableNum = data['order']['table']
         print(data['dishrecord'])
         print(data['order'])
+        print(tableNum)
         tables = Table.objects.get(id=tableNum)
     except BaseException:
         return Response({'orderID',-1})
