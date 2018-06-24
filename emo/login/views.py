@@ -13,7 +13,7 @@ def auth_view(request):
         username=request.POST.get['username']
         password=request.POST.get["password"]
     except BaseException:
-        return Response({'success',False})
+        return HttpResponse(json.dumps({'success':False}, ensure_ascii=False), content_type="application/json")
     
     try:
         user=authenticate(username=username,password=password)  # 验证用户名和密码，返回用户对象
@@ -27,7 +27,7 @@ def auth_view(request):
             resp = {'success': False, 'detail': 'user doesn\'t exist or the password is wrong!'}
             return HttpResponse(json.dumps(resp, ensure_ascii=False), content_type="application/json")
     except BaseException:
-        return Response({'orderID',-4})
+        return HttpResponse(json.dumps({'success':False}, ensure_ascii=False), content_type="application/json")
 
 @csrf_exempt
 def logout_view(request):
