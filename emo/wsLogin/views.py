@@ -1,5 +1,5 @@
 # coding:utf-8
-from django.shortcuts import render,HttpResponse,HttpResponseNotFound
+from django.shortcuts import render,HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from wsLogin.models import WxUser
 from django.contrib.auth.models import User
@@ -31,7 +31,7 @@ def wxLogin(request):
         try:
             session = request.POST["session_id"]
         except BaseException:
-            return HttpResponseNotFound()
+            return HttpResponse(json.dumps({'openid':''}, ensure_ascii=False), content_type="application/json")
     
         try:
             user = WxUser.objects.get(session_id=session)
