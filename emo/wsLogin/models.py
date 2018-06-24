@@ -12,3 +12,7 @@ class WxUser(models.Model):
     headimgurl = models.CharField('头像', max_length=150)
     privilege = models.CharField('特权', max_length=150)
     unionid = models.CharField('统一标识', max_length=150)
+
+class WxOpenid(models.Model):
+    openid = models.CharField('openid', max_length=150)
+    access_token = models.CharField('access_token', max_length=150)

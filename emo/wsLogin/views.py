@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view,authentication_classes
 from rest_framework.authentication import SessionAuthentication
 from django.views.decorators.csrf import csrf_exempt
-from wsLogin.models import WxUser
+from wsLogin.models import WxUser, WxOpenid
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
@@ -70,8 +70,8 @@ def readJsonFrom(addr):
         response =  urllib.request.urlopen(addr)
         html = response.read()
         html = html.decode('utf-8')
-        json = json.loads(html)
-        return json
+        #print(html)
+        return html
     except BaseException:
         return None
 
@@ -82,36 +82,59 @@ def wxLogin(request):
     #    value = request.COOKIES["sessionid"]
     #except BaseException:
     #    value = ''
-    try:
-        session = request.POST["session_id"]
-    except BaseException:
-        return Response({'opneid':''})
-
 
     if request.user.is_authenticated:
         cUser = request.user
         try:
-            existUser = User.objects.get(username=cUser.username)
-            return Response({'openid':cUser.username})
+            #existUser = User.objects.get(username=cUser.username)
+            userOpenid = WxOpenid.objects.get(openid=cUser.username)
+            addr = 'http://0.0.0.0:8000/fakewx?openid='+userOpenid.openid+'&access_token='+userOpenid.access_token
+            #流程
+            strRes = readJsonFrom(addr)
+            js = json.loads(strRes)
+            return Response(js)
+        except WxOpenid.DoesNotExist:
+            return Response({'detail':'No this openid'})
         except BaseException:
-            return Response({'openid':''})
+            return Response({'detail':'wrong openid or access_token'})
         
     else:
-        addr = 'http://0.0.0.0:8000/fakewx/'+session+'/'
+        try:
+            openid = request.POST["openid"]
+        except BaseException:
+            return Response({'opneid':''})
+
+        try:
+            access_token = request.POST["access_token"]
+        except BaseException:
+            return Response({'access_token':''})
+
+        addr = 'http://0.0.0.0:8000/fakewx?openid='+openid+'&access_token='+access_token
         #流程
-        json = readJsonFrom(addr)
-        if json == None:
-            return Response({'openid':''})
-        un = json.openid
+        strRes = readJsonFrom(addr)
+        if strRes == None:
+            return Response({'detail':'wrong openid or access_token'})
+        #print(type(json))
+        js = json.loads(strRes)
         try: 
-            user = User.objects.get(username=un)
+            userOpenid = WxOpenid.objects.get(openid = openid)
+            userOpenid.access_token = access_token
+            userOpenid.save()
+            user = User.objects.get(username = openid)
             login(request,user)
-            return Response(json)
-        except User.DoesNotExist:
+            return Response(js)
+        except WxOpenid.DoesNotExist:
+            userOpenid = WxOpenid()
+            userOpenid.openid = openid
+            userOpenid.access_token = access_token
+            userOpenid.save()
+
             randomPass = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
-            default_user=User.objects.create_user(username=un,password=randomPass)  #创建新用户 
+            default_user=User.objects.create_user(username=openid,password=randomPass)  #创建新用户 
             login(request,default_user)
-            return Response(json)
+            return Response(js)
+
+            
 
         '''
         readJsonFrom访问api网站
@@ -122,29 +145,35 @@ def wxLogin(request):
         '''
 
 
-@api_view(['POST'])
-def fakeWx(request,session_id):
+@api_view(['GET'])
+def fakeWx(request):
     try:
-        session = session_id
+        openid = request.GET['openid']
     except BaseException:
-        return Response({'opneid':''})
+        print(2222)
+        return Response({'openid':''})
+    
     try:
-        user = WxUser.objects.get(session_id=session)
-        responseData = {'openid': str(user.id), 'nickname': user.nickname, 'sex': user.sex, 'province': user.province, 'city': user.city, 'country': user.country, 'headimgurl': user.headimgurl, 'privilege': '超级加倍', 'unionid': '3838438'}
-        return Response(responseData)
+        user = WxUser.objects.get(session_id=openid)
+        print(444)
+        responseData = {'openid': openid, 'nickname': user.nickname, 'sex': user.sex, 'province': user.province, 'city': user.city, 'country': user.country, 'headimgurl': user.headimgurl, 'privilege': '超级加倍', 'unionid': '3838438'}
+        #print(responseData)
+        return HttpResponse(json.dumps(responseData, ensure_ascii=False), content_type="application/json")
     except WxUser.DoesNotExist:
         user = WxUser()
         user.sex = random.randint(1,2)
         user.save()
-        user.session_id = session 
+        user.session_id = openid 
         user.nickname = 'user'+str(user.id)
         user.province = 'province'+str(user.id)
         user.city = 'city'+str(user.id)
         user.country = 'country'+str(user.id)
         user.headimgurl = 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1529751764221&di=7b77ae9d0598a1d996abbd83ff63b7b5&imgtype=0&src=http%3A%2F%2Fupload.mnw.cn%2F2018%2F0324%2F1521876947374.png'
         user.save()
-        responseData = {'openid': str(user.id), 'nickname': user.nickname, 'sex': user.sex, 'province': user.province, 'city': user.city, 'country': user.country, 'headimgurl': user.headimgurl, 'privilege': '超级加倍', 'unionid': '3838438'}
-        return Response(responseData)
+        responseData = {'openid': openid, 'nickname': user.nickname, 'sex': user.sex, 'province': user.province, 'city': user.city, 'country': user.country, 'headimgurl': user.headimgurl, 'privilege': '超级加倍', 'unionid': '3838438'}
+        #print(responseData)
+        return HttpResponse(json.dumps(responseData, ensure_ascii=False), content_type="application/json")
     except BaseException:
+        print(333)
         return Response({'opneid':''})
     

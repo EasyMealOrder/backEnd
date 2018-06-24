@@ -252,6 +252,7 @@ def createOrder(request):
 
     #cc means create and cancel
     data = request.data
+    print(data)
     
     tableNum = -1
     try:

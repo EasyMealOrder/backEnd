@@ -69,7 +69,8 @@ urlpatterns = [
     path('changePass/',login_api.change_passwd,name="changePass"),
     path('echo/',ws_api.echo),
 
-    path('wxLogin/', wxLogin_api.wxLogin, name="wxLogin")
+    path('wxLogin/', wxLogin_api.wxLogin, name="wxLogin"),
+    path('fakewx', wxLogin_api.fakeWx, name="fakeWx")
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  
