@@ -65,3 +65,4 @@ def wxLogin(request):
         user = user.save()
         responseData = {'openid': user.id, 'nickname': user.nickname, 'sex': user.sex, 'province': user.province, 'city': user.city, 'country': user.country, 'headimgurl': user.headimgurl, 'privilege': '超级加倍', 'unionid': '3838438'}
         return HttpResponse(json.dumps(responseData, ensure_ascii=False), content_type="application/json")
+    '''

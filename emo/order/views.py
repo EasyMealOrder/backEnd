@@ -206,7 +206,7 @@ def getManyOrderInfo(request, numOfOnePage, page):
             return Response(status=status.HTTP_404_NOT_FOUND)
         res = Order.objects.all().only('id','price','finished').order_by('-id')[start:end]
         
-     #匿名用户只返回一个最新的订单，桌号根据session来获取 
+     #匿名用户只返回空
     else:
         return Response([])
         

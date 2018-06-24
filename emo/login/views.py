@@ -10,8 +10,8 @@ def auth_view(request):
     username=request.POST.get("username")       # 获取用户名
     password=request.POST.get("password")       # 获取用户的密码
     try:
-        print(type(username))
-        print(type(password))
+        username=request.POST.get['username']
+        password=request.POST.get["password"]
     except BaseException:
         return Response({'success',False})
     
