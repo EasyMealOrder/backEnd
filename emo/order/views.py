@@ -247,10 +247,13 @@ request data format
 @api_view(['POST'])
 @authentication_classes((SessionAuthentication, ))
 def createOrder(request):
-    if request.user == AnonymousUser:
+
+    if request.user.is_authenticated:
         return {'orderID',-6}
 
     #cc means create and cancel
+    print(2222222)
+
     data = request.data
     print(data)
     
