@@ -333,9 +333,11 @@ def finishOrder(request):
     data=request.data
     try:
         orderID = data['orderID']
-        orders = Order.objects.filter(orderID = orderID)
+        orders = Order.objects.get(id = orderID)
+        tableNum = orders.table
         Table.objects.filter(id=tableNum).update(occupy=False)
-        orders.update(finished = True)
+        orders.finished = True
+        orders.save()
         DishRecord.objects.filter(orderID =orderID).update(finished = True)
         return Response({'orderID',orderID})
     except BaseException:
