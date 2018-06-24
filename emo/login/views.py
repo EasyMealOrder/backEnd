@@ -7,11 +7,9 @@ import json
     
 @csrf_exempt
 def auth_view(request):
-    username=request.POST.get("username")       # 获取用户名
-    password=request.POST.get("password")       # 获取用户的密码
     try:
-        username=request.POST.get['username']
-        password=request.POST.get["password"]
+        username=request.POST['username']
+        password=request.POST["password"]
     except BaseException:
         return HttpResponse(json.dumps({'success':False}, ensure_ascii=False), content_type="application/json")
     
