@@ -247,7 +247,7 @@ request data format
 @api_view(['POST'])
 @authentication_classes((SessionAuthentication, ))
 def createOrder(request):
-
+    print(2222222)
     if request.user.is_authenticated:
         return {'orderID',-6}
 
