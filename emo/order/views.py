@@ -260,13 +260,13 @@ def createOrder(request):
     
     tableNum = -1
     try:
-        tableNum = data['order']['table']
         print(type(data))
         js = json.loads(data)
         print(js)
         print(data['dishrecord'])
         print(data['order'])
-        print(tableNum)
+        tableNum = data['order']['table']
+        print(type(data))
         tables = Table.objects.get(id=tableNum)
     except BaseException:
         return Response({'orderID',-1})
