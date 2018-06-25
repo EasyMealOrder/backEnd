@@ -234,7 +234,7 @@ request data format
 {
 "order":{
 "price":14,
-"note":"more salt"
+"note":"more salt",
 "table":1
 },
 "dishrecord":[{"dishID":1,"number":1,"price":14,"name":"shit"
@@ -256,8 +256,8 @@ def createOrder(request):
     
     tableNum = -1
     try:
-        #tableNum = data['order']['table']
-        tableNum = data.order.table
+        tableNum = data['order']['table']
+        #tableNum = data.order.table
         tables = Table.objects.get(id=tableNum)
     except BaseException:
         return Response({'orderID',-1})
@@ -286,7 +286,8 @@ def createOrder(request):
             newdr.price = x['price']
             newdr.finished = False
             newdr.save()
-        tables.update(occupy=True)
+        tables.occupy=True
+	tables.save()
         return Response({'orderID',orderID})
     except BaseException:
         return Response({'orderID',-4})
