@@ -262,8 +262,8 @@ def createOrder(request):
         return Response({'orderID',-1})
 
 
-    if tables.occupy == True:
-        return Response({'orderID',-3})      # table using
+    #if tables.occupy == True:
+    #    return Response({'orderID',-3})      # table using
 
     
     try:        
