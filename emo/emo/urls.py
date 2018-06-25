@@ -2,6 +2,7 @@
 from django.conf import settings 
 from django.conf.urls.static import static
 from django.conf.urls import include
+from django.views.decorators.csrf import csrf_exempt
 
 
 """emo URL Configuration
@@ -69,8 +70,8 @@ urlpatterns = [
     path('changePass/',login_api.change_passwd,name="changePass"),
     path('echo/',ws_api.echo),
 
-    path('wxLogin/', wxLogin_api.wxLogin, name="wxLogin"),
-    path('fakewx', wxLogin_api.fakeWx, name="fakeWx")
+    path('wxLogin/', csrf_exempt(wxLogin_api.wxLogin), name="wxLogin"),
+    path('fakewx', csrf_exempt(wxLogin_api.fakeWx), name="fakeWx")
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  

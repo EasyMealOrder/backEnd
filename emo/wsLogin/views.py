@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view,authentication_classes
 from rest_framework.authentication import SessionAuthentication
 from django.views.decorators.csrf import csrf_exempt
+from django.template.context_processors import csrf
 from wsLogin.models import WxUser, WxOpenid
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
@@ -64,7 +65,7 @@ def wxLogin(request):
             return HttpResponse(json.dumps({'openid':''}, ensure_ascii=False), content_type="application/json")
 """
 
-
+@csrf_exempt
 def readJsonFrom(addr):
     try:
         response =  urllib.request.urlopen(addr)
@@ -75,17 +76,21 @@ def readJsonFrom(addr):
     except BaseException:
         return None
 
+
 @api_view(['POST'])
+@csrf_exempt
 def wxLogin(request):
     #value = ''
     #try:
     #    value = request.COOKIES["sessionid"]
     #except BaseException:
     #    value = ''
-
     if request.user.is_authenticated:
         cUser = request.user
+        print(cUser)
+        csrf(request)
         try:
+            #print(csrf(request))
             #existUser = User.objects.get(username=cUser.username)
             userOpenid = WxOpenid.objects.get(openid=cUser.username)
             addr = 'http://0.0.0.0:8000/fakewx?openid='+userOpenid.openid+'&access_token='+userOpenid.access_token
@@ -96,7 +101,7 @@ def wxLogin(request):
         except WxOpenid.DoesNotExist:
             return Response({'detail':'No this openid'})
         except BaseException:
-            return Response({'detail':'wrong openid or access_token'})
+            return Response({'detail':'wrong openid or access_token pos 1'})
         
     else:
         try:
@@ -121,6 +126,7 @@ def wxLogin(request):
             userOpenid.access_token = access_token
             userOpenid.save()
             user = User.objects.get(username = openid)
+            print(user)
             login(request,user)
             return Response(js)
         except WxOpenid.DoesNotExist:
@@ -146,6 +152,7 @@ def wxLogin(request):
 
 
 @api_view(['GET'])
+@csrf_exempt
 def fakeWx(request):
     try:
         openid = request.GET['openid']
