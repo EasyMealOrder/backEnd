@@ -248,19 +248,14 @@ request data format
 @api_view(['POST'])
 @authentication_classes((SessionAuthentication, ))
 def createOrder(request):
-    print(2222222)
     if not request.user.is_authenticated:
         return Response({'orderID',-6})
 
-    #cc means create and cancel
-    print(2222222)
 
     data = request.data
-    print(data)
     
     tableNum = -1
     try:
-        print(type(data.order))
         #tableNum = data['order']['table']
         tableNum = data.order.table
         tables = Table.objects.get(id=tableNum)
