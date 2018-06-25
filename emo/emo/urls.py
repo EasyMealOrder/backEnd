@@ -52,6 +52,7 @@ urlpatterns = [
 	path('order/create/',order_api.createOrder,name="createOrder"),
 	path('order/cancel/',order_api.cancelOrder,name="cancelOrder"),
 	path('order/finish/',order_api.finishOrder,name="finishOrder"),
+    path('order/getUserOder/',order_api.getUserOrder,name="getUserOrder"),
 	path('dishrecord/finish/',order_api.finishDish,name="finishDish"),
 
 

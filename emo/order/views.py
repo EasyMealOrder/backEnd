@@ -9,6 +9,7 @@ from order.serializers import  *
 from order.models import Order,DishRecord
 from dishes.toolset import getStartEnd,isRegCustomer
 from frontpage.models import Table
+from django.template.context_processors import csrf
 import json
 #from pandas.plotting._tools import table
 # Create your views here.
@@ -365,5 +366,18 @@ def finishDish(request):
         return Response({'orderID',-1})
 
 
-
+@api_view(['POST'])
+def getUserOrder(request):
+    csrf(request)
+    if request.user.is_authenticated:
+        username = request.user.username
+        try:
+            userOrder = Order.objects.filter(username=username)
+            serial = DetailOrderSerializer(userOrder,many=True)
+            return Response(serial.data)
+        except BaseException:
+            return Response({'detail','no this user\'s order'})
+    else:
+        return Response({'detail','user is not authenticated'})
+        
     
