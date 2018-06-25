@@ -237,8 +237,7 @@ request data format
 "note":"more salt",
 "table":1
 },
-"dishrecord":[{"dishID":1,"number":1,"price":14,"name":"shit"
-}]
+"dishrecord":[{"dishID":1,"number":1,"price":14,"name":"shit"}]
 }
 
 
@@ -287,7 +286,7 @@ def createOrder(request):
             newdr.finished = False
             newdr.save()
         tables.occupy=True
-	tables.save()
+        tables.save()
         return Response({'orderID',orderID})
     except BaseException:
         return Response({'orderID',-4})
