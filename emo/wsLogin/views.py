@@ -93,7 +93,7 @@ def wxLogin(request):
             #print(csrf(request))
             #existUser = User.objects.get(username=cUser.username)
             userOpenid = WxOpenid.objects.get(openid=cUser.username)
-            addr = 'http://0.0.0.0:8000/fakewx?openid='+userOpenid.openid+'&access_token='+userOpenid.access_token
+            addr = 'http://0.0.0.0:9000/fakewx?openid='+userOpenid.openid+'&access_token='+userOpenid.access_token
             #流程
             strRes = readJsonFrom(addr)
             js = json.loads(strRes)
@@ -114,7 +114,7 @@ def wxLogin(request):
         except BaseException:
             return Response({'access_token':''})
 
-        addr = 'http://0.0.0.0:8000/fakewx?openid='+openid+'&access_token='+access_token
+        addr = 'http://0.0.0.0:9000/fakewx?openid='+openid+'&access_token='+access_token
         #流程
         strRes = readJsonFrom(addr)
         if strRes == None:
