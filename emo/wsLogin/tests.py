@@ -7,7 +7,7 @@ import json
 class WxLoginMethodTests(TestCase):
 
     def  test_login_with_openid_and_accesstoken(self):
-        url = 'http://localhost:8000/wxLogin/'
+        url = 'http://193.112.24.51:8000/wxLogin/'
         d = {'openid': 'ccaonimagebi', 'access_token': 'qunimade'}    
         r = requests.post(url, data=d)
         jsData = json.loads(r.text)
