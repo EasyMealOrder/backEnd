@@ -15,4 +15,5 @@ install:
 #    - "pep8 --exclude=migrations --ignore=E501,E225 src"
 #    - pyflakes -x W src
 script:
-    - cd emo/ && python3 manage.py test
+    - cd emo/ 
+    - python3 manage.py test
