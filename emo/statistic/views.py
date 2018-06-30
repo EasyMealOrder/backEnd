@@ -86,20 +86,18 @@ def getManyFeedbackInfo(request, numOfOnePage, page):
 }
 输出：
 {
-	"orderID":3
+	"orderID":2
 }
 出错orderID返回为负数
 '''
 @api_view(['POST'])
 @authentication_classes((SessionAuthentication, ))
-def createFeedback(request):
+def setFeedback(request):
 	data = request.data
 	try:
-		fb = Feedback()
-		fb.orderID = data['orderID']
+		fb = Feedback.objects.get(orderID = data['orderID'])
 		fb.star = data['star']
 		fb.comment = data['comment']
-		fb.username = request.user.username
 		fb.save()
 		return Response({'orderID':fb.orderID})
 	except BaseException:

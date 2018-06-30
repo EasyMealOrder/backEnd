@@ -59,7 +59,7 @@ urlpatterns = [
     path('feedback/count/',sta_api.getFeedbackCount,name="getFeedbackCount"),
     path('feedback/<int:orderid>/',sta_api.getOneFeedbackInfo,name="getOneFeedbackInfo"),
     path('feedback/pages/<int:numOfOnePage>/<int:page>/',sta_api.getManyFeedbackInfo,name="getManyFeedbackInfo"),
-    path('feedback/create/',sta_api.createFeedback,name="createFeedback"),
+    path('feedback/set/',sta_api.setFeedback,name="setFeedback"),
 
 
 

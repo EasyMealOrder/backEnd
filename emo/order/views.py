@@ -11,6 +11,7 @@ from dishes.models import Dishes
 from dishes.toolset import getStartEnd,isRegCustomer
 from frontpage.models import Table
 from django.template.context_processors import csrf
+from statistic.models import Feedback
 import json
 #from pandas.plotting._tools import table
 # Create your views here.
@@ -277,6 +278,13 @@ def createOrder(request):
         neworder.cancel=False
         neworder.note=data['order']['note']
         neworder.save()
+        #新建反馈
+        newFeedback = Feedback()
+        newFeedback.orderID = neworder.id
+        newFeedback.star = 0
+        newFeedback.comment = ""
+        newFeedback.username = request.user.username
+        newFeedback.save()
         orderID = neworder.id
         for x in data['dishrecord']:
             newdr = DishRecord()
@@ -377,13 +385,31 @@ def getUserOrder(request):
         try:
             #获取用户订单
             userOrder = Order.objects.filter(username=username)
-            serial = DetailOrderSerializer(userOrder,many=True)
-            orderJson = serial.data
+            #serialOrder = DetailOrderSerializer(userOrder,many=True).data
+            #orderJson = serial.data
             responseData = []
-            for oo in orderJson:
+            for oo in userOrder:
+                resFeeBack = Feedback()
+                try:
+                    #获取订单及其评价
+                    feedBack = Feedback.objects.get(orderID = oo.id)
+                    resFeeBack = feedBack
+                except Feedback.DoesNotExist:
+                    #评价不存在则创建默认评价
+                    feedback = Feedback()
+                    feedBack.star = 0
+                    feedBack.comment = ""
+                    feedBack.orderID = oo.id
+                    feedBack.username = request.user.username
+                    feedBack.save()
+                    resFeeBack = feedback
+                except BaseException:
+                    return Response({"feedBack","-1"})
+                #订单信息
+                orderInfo = {"id":oo.id, "username":oo.username,"price":oo.price,"finished":oo.finished, "cancel":oo.cancel, "note":oo.note, "table":oo.table, "star":feedBack.star,"comment":feedBack.comment, "disable":(feedBack.star!=0)}    
                 #获取单个订单的菜单
-                dataOD = {"order":oo, "dish":[]}
-                orderDish = DishRecord.objects.filter(orderID = oo["id"])
+                dataOD = {"order":orderInfo, "dish":[]}
+                orderDish = DishRecord.objects.filter(orderID = oo.id)
                 for dish in orderDish:
                     #编辑菜色json
                     dishO = Dishes.objects.get(id = dish.dishID)
