@@ -1,4 +1,5 @@
 # backEnd
+[![Build Status](https://travis-ci.org/EasyMealOrder/backEnd.svg?branch=master)](https://travis-ci.org/EasyMealOrder/backEnd)
 backEnd for EasyMealOrder
 
 
