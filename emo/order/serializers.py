@@ -1,6 +1,7 @@
 # coding:utf-8
 from rest_framework import serializers
 from order.models import  DishRecord,Order
+from dishes.models import Dishes
 
 class DetailDishRecordSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,3 +21,9 @@ class SimpOrderSerializer(serializers.ModelSerializer):
         model = Order
         exclude = ()
         field = ('id','price','finished')
+
+class DetailDishSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Dishes
+        exclude = ('soldout',)
+        field = '__all__'

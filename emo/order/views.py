@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from order.serializers import  *
 from order.models import Order,DishRecord
+from dishes.models import Dishes
 from dishes.toolset import getStartEnd,isRegCustomer
 from frontpage.models import Table
 from django.template.context_processors import csrf
@@ -365,7 +366,9 @@ def finishDish(request):
     except BaseException:
         return Response({'orderID',-1})
 
-
+#获取用户的订单列表
+#通过cookie的sessionid获取用户id
+#返回值为[{"order":{},"dish":[]}]
 @api_view(['POST'])
 def getUserOrder(request):
     csrf(request)
@@ -374,7 +377,19 @@ def getUserOrder(request):
         try:
             userOrder = Order.objects.filter(username=username)
             serial = DetailOrderSerializer(userOrder,many=True)
-            return Response(serial.data)
+            orderJson = serial.data
+            responseData = []
+            for oo in orderJson:
+                dataOD = {"order":oo, "dish":[]}
+                orderDish = DishRecord.objects.filter(orderID = oo["id"])
+                for dish in orderDish:
+                    dishO = Dishes.objects.get(id = dish.dishID)
+                    serialDishData = DetailDishSerializer(dishO, many = False).data
+                    dishJson = {"name":dish.name, "number":dish.number, "price":dish.price, "finished":dish.finished, "pic":serialDishData["pic"]}
+                    dataOD["dish"].append(dishJson)
+                responseData.append(dataOD)
+            #print(responseData)
+            return Response(responseData)
         except BaseException:
             return Response({'detail','no this user\'s order'})
     else:

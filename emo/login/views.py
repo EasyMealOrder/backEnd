@@ -4,7 +4,10 @@ from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 import json
-    
+
+#自带用户系统
+#POST格式 form-data "username"="1","password"="1"
+#验证用户名密码,返回登录信息,登录成功增加cookie sessionid
 @csrf_exempt
 def auth_view(request):
     try:
@@ -27,6 +30,9 @@ def auth_view(request):
     except BaseException:
         return HttpResponse(json.dumps({'success':False}, ensure_ascii=False), content_type="application/json")
 
+#退出登录
+#request带sessionid,验证并确认用户
+#自带用户系统注销用户并返回登出信息
 @csrf_exempt
 def logout_view(request):
     if not request.user.is_authenticated:
@@ -39,6 +45,10 @@ def logout_view(request):
     resp = {'success': True, 'detail': 'logout success!'}
     return HttpResponse(json.dumps(resp, ensure_ascii=False), content_type="application/json")
   
+#创建用户
+#POST格式 form-data 
+#需要字段 username, password, confirm_password
+#用户系统检验用户密码信息创建用户,返回创建信息
 @csrf_exempt
 def create_user(request):
     
@@ -65,6 +75,11 @@ def create_user(request):
     resp = {'success': False, 'detail': msg}
     return HttpResponse(json.dumps(resp, ensure_ascii=False), content_type="application/json")
 
+#更换密码
+#request需带sessionid
+#POST格式 form-data
+#需要字段 old_password, new_password, confirm_password
+#检验密码更换密码返回密码更换信息
 @csrf_exempt
 def change_passwd(request):
     if not request.user.is_authenticated:

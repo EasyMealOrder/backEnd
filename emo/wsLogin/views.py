@@ -65,6 +65,7 @@ def wxLogin(request):
             return HttpResponse(json.dumps({'openid':''}, ensure_ascii=False), content_type="application/json")
 """
 
+#访问url,response转换成json返回
 @csrf_exempt
 def readJsonFrom(addr):
     try:
@@ -76,7 +77,7 @@ def readJsonFrom(addr):
     except BaseException:
         return None
 
-
+#假装微信登录
 @api_view(['POST'])
 @csrf_exempt
 def wxLogin(request):
@@ -85,17 +86,22 @@ def wxLogin(request):
     #    value = request.COOKIES["sessionid"]
     #except BaseException:
     #    value = ''
+    #如果request带sessionid,验证用户
     if request.user.is_authenticated:
         cUser = request.user
         print(cUser)
+        #csrf校验
         csrf(request)
         try:
             #print(csrf(request))
             #existUser = User.objects.get(username=cUser.username)
+            #获取用户
             userOpenid = WxOpenid.objects.get(openid=cUser.username)
+            #访问假装微信接口
             addr = 'http://0.0.0.0:9000/fakewx?openid='+userOpenid.openid+'&access_token='+userOpenid.access_token
             #流程
             strRes = readJsonFrom(addr)
+            #加载为json
             js = json.loads(strRes)
             return Response(js)
         except WxOpenid.DoesNotExist:
@@ -104,6 +110,7 @@ def wxLogin(request):
             return Response({'detail':'wrong openid or access_token pos 1'})
         
     else:
+        #没有sessionid,获取POST form-data格式数据
         try:
             openid = request.POST["openid"]
         except BaseException:
@@ -113,7 +120,7 @@ def wxLogin(request):
             access_token = request.POST["access_token"]
         except BaseException:
             return Response({'access_token':''})
-
+        #访问假装微信接口获取用户信息
         addr = 'http://0.0.0.0:9000/fakewx?openid='+openid+'&access_token='+access_token
         #流程
         strRes = readJsonFrom(addr)
@@ -122,19 +129,22 @@ def wxLogin(request):
         #print(type(json))
         js = json.loads(strRes)
         try: 
+            #用户openid若在本地数据库存在,更换access_token
             userOpenid = WxOpenid.objects.get(openid = openid)
             userOpenid.access_token = access_token
             userOpenid.save()
+            #获取openid对应的用户系统的用户并登陆
             user = User.objects.get(username = openid)
             print(user)
             login(request,user)
             return Response(js)
         except WxOpenid.DoesNotExist:
+            #openid在本地数据库不存在,创建WxOpenid对象保存openid,access_token
             userOpenid = WxOpenid()
             userOpenid.openid = openid
             userOpenid.access_token = access_token
             userOpenid.save()
-
+            #用户系统注册用户,密码随机生成并登录
             randomPass = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
             default_user=User.objects.create_user(username=openid,password=randomPass)  #创建新用户 
             login(request,default_user)
@@ -150,23 +160,27 @@ def wxLogin(request):
         记得异常处理
         '''
 
-
+#假装微信接口
 @api_view(['GET'])
 @csrf_exempt
 def fakeWx(request):
     try:
+        #获取openid
         openid = request.GET['openid']
     except BaseException:
         print(2222)
         return Response({'openid':''})
     
     try:
+        #openid已存在,假装微信获取用户信息并返回
         user = WxUser.objects.get(session_id=openid)
         print(444)
         responseData = {'openid': openid, 'nickname': user.nickname, 'sex': user.sex, 'province': user.province, 'city': user.city, 'country': user.country, 'headimgurl': user.headimgurl, 'privilege': '超级加倍', 'unionid': '3838438'}
         #print(responseData)
         return HttpResponse(json.dumps(responseData, ensure_ascii=False), content_type="application/json")
     except WxUser.DoesNotExist:
+        #openid不存在本地数据库,创建假微信用户
+        #随机生成用户信息并返回用户信息
         user = WxUser()
         user.sex = random.randint(1,2)
         user.save()
