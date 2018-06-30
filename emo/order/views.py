@@ -414,7 +414,7 @@ def getUserOrder(request):
                     #编辑菜色json
                     dishO = Dishes.objects.get(id = dish.dishID)
                     serialDishData = DetailDishSerializer(dishO, many = False).data
-                    dishJson = {"name":dish.name, "number":dish.number, "price":dish.price, "finished":dish.finished, "pic":request.get_host()+serialDishData["pic"]}
+                    dishJson = {"name":dish.name, "number":dish.number, "price":dish.price, "finished":dish.finished, "pic":"http://"+request.get_host()+serialDishData["pic"]}
                     dataOD["dish"].append(dishJson)
                 responseData.append(dataOD)
             #print(responseData)
