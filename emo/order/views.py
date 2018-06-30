@@ -375,20 +375,24 @@ def getUserOrder(request):
     if request.user.is_authenticated:
         username = request.user.username
         try:
+            #获取用户订单
             userOrder = Order.objects.filter(username=username)
             serial = DetailOrderSerializer(userOrder,many=True)
             orderJson = serial.data
             responseData = []
             for oo in orderJson:
+                #获取单个订单的菜单
                 dataOD = {"order":oo, "dish":[]}
                 orderDish = DishRecord.objects.filter(orderID = oo["id"])
                 for dish in orderDish:
+                    #编辑菜色json
                     dishO = Dishes.objects.get(id = dish.dishID)
                     serialDishData = DetailDishSerializer(dishO, many = False).data
-                    dishJson = {"name":dish.name, "number":dish.number, "price":dish.price, "finished":dish.finished, "pic":serialDishData["pic"]}
+                    dishJson = {"name":dish.name, "number":dish.number, "price":dish.price, "finished":dish.finished, "pic":request.get_host()+serialDishData["pic"]}
                     dataOD["dish"].append(dishJson)
                 responseData.append(dataOD)
             #print(responseData)
+            #返回订单和对应的菜色数组
             return Response(responseData)
         except BaseException:
             return Response({'detail','no this user\'s order'})
