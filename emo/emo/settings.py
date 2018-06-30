@@ -143,3 +143,5 @@ STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder"
 )
+
+WX_API_SERVER = 'http://0.0.0.0:9000/'

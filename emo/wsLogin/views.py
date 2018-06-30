@@ -9,6 +9,7 @@ from wsLogin.models import WxUser, WxOpenid
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
+from emo import settings
 import json
 import random
 import string
@@ -81,6 +82,7 @@ def readJsonFrom(addr):
 @api_view(['POST'])
 @csrf_exempt
 def wxLogin(request):
+    wxaddr = settings.WX_API_SERVER
     #value = ''
     #try:
     #    value = request.COOKIES["sessionid"]
@@ -98,7 +100,7 @@ def wxLogin(request):
             #获取用户
             userOpenid = WxOpenid.objects.get(openid=cUser.username)
             #访问假装微信接口
-            addr = 'http://0.0.0.0:9000/fakewx?openid='+userOpenid.openid+'&access_token='+userOpenid.access_token
+            addr = wxaddr+'fakewx?openid='+userOpenid.openid+'&access_token='+userOpenid.access_token
             #流程
             strRes = readJsonFrom(addr)
             #加载为json
@@ -121,7 +123,7 @@ def wxLogin(request):
         except BaseException:
             return Response({'access_token':''})
         #访问假装微信接口获取用户信息
-        addr = 'http://0.0.0.0:9000/fakewx?openid='+openid+'&access_token='+access_token
+        addr = wxaddr+'fakewx?openid='+openid+'&access_token='+access_token
         #流程
         strRes = readJsonFrom(addr)
         if strRes == None:

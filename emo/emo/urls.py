@@ -56,9 +56,10 @@ urlpatterns = [
 	path('dishrecord/finish/',order_api.finishDish,name="finishDish"),
 
 
-    path('feedback/count',sta_api.getFeedbackCount,name="getFeedbackCount"),
+    path('feedback/count/',sta_api.getFeedbackCount,name="getFeedbackCount"),
     path('feedback/<int:orderid>/',sta_api.getOneFeedbackInfo,name="getOneFeedbackInfo"),
     path('feedback/pages/<int:numOfOnePage>/<int:page>/',sta_api.getManyFeedbackInfo,name="getManyFeedbackInfo"),
+    path('feedback/create/',sta_api.createFeedback,name="createFeedback"),
 
 
 
