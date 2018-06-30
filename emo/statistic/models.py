@@ -18,4 +18,4 @@ class Feedback(models.Model):
     username = models.CharField('用户名', max_length=150)
     
     def __str__(self):
-        return '反馈'+self.orderID
+        return '反馈'+str(self.orderID)
