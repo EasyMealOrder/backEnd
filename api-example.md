@@ -67,7 +67,7 @@
 ```
 
 ## Feedback
-反馈吧，我也不知道有用没用。。用orderID查询可以得到
+反馈吧，我也不知道有用没用。用orderID查询可以得到
 ```
 {
     "orderID":2,
@@ -76,6 +76,3 @@
     "username":"anon"
 }
 ```
-
-##  Statistic
-没啥用。。。没想用来干嘛  
