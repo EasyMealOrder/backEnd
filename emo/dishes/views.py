@@ -8,9 +8,20 @@ from dishes.models import *
 
 
 
-#尽量少使用Foreign Key，只在category处使用了Foreign Key
 
 
+#根据dish id获取菜的详情
+'''
+{
+    "id":2,
+    "name" :"anon",
+    "price":23.7,
+    "dtype": "sichuan",
+    "description":"gioog",
+    "pic":"/img/uploads/xxx.jpg",
+    "recommend": False
+}
+'''
 @api_view(['GET'])
 def getOneDishInfo(request, dishid):
     try:
@@ -21,7 +32,20 @@ def getOneDishInfo(request, dishid):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-
+#获得所有菜的信息
+'''
+[
+    {
+    "id":2,
+    "name" :"anon",
+    "price":23.7,
+    "dtype": "sichuan",
+    "description":"gioog",
+    "pic":"/img/uploads/xxx.jpg",
+    "recommend": False
+    }
+]
+'''
 @api_view(['GET'])
 def getAllDishInfo(request):
     res = Dishes.objects.filter(soldout=False)
@@ -29,7 +53,13 @@ def getAllDishInfo(request):
     return Response(serial.data)
 
 
-
+#获取菜类别信息
+'''
+[
+    {"dtype":"noodles"},
+    {"dtype":"rubbish"}
+]
+'''
 @api_view(['GET'])
 def getCategoryInfo(request):
     res = Category.objects.all()
