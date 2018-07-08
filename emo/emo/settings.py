@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '7q24h-@9w0d1carf=xqj!#nbavplay=5gf%-ut7daj*2h1g%l1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'order',
     'statistic',
     'frontpage',
-    'payment',
     'login',
     'rest_framework',
     'websocket',
@@ -62,7 +61,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'emo.urls'
-SESSION_COOKIE_AGE=60*60*24
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -144,4 +143,4 @@ STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.AppDirectoriesFinder"
 )
 
-WX_API_SERVER = 'http://0.0.0.0:9000/'
+WX_API_SERVER = 'http://0.0.0.0:8000/'
